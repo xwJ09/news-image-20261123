@@ -100,10 +100,16 @@ def main():
     draw_wrapped(d, hx, 216, hero_cap, font(REG, 20), NAVY_TEXT, W - 24 - hx, 26, max_lines=3)
 
     # Stats strip along the bottom of the hero band.
-    d.rectangle([0, 296, W, 320], fill=NAVY)
+    # Strip is 32px tall and the text is centred on its real glyph box,
+    # so descenders (e.g. the Q in NASDAQ) fit with padding top/bottom.
+    d.rectangle([0, 296, W, 328], fill=NAVY)
     stats = "NASDAQ +6.5%    ·    S&P 500 +4.7%    ·    DOW +1,448    ·    +$950BN IN A DAY"
-    sw = d.textlength(stats, font=font(BOLD, 18))
-    d.text(((W - sw) / 2, 300), stats, font=font(BOLD, 18), fill=GOLD_BRIGHT)
+    fstats = font(BOLD, 18)
+    sw = d.textlength(stats, font=fstats)
+    sb = d.textbbox((0, 0), stats, font=fstats)
+    sx = (W - sw) / 2 - sb[0]
+    sy = 296 + (32 - (sb[3] - sb[1])) // 2 - sb[1]
+    d.text((sx, sy), stats, font=fstats, fill=GOLD_BRIGHT)
 
     # ---- scoreboard grid: 3 x 2 navy number-cards ----
     cards = [
